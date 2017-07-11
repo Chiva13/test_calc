@@ -17,4 +17,10 @@ namespace SAMSErrorHandling
 		std::cin >> BadInput;
 		return 1;
 	}
+
+	int HandleRuntimeError(std::runtime_error theRuntimeError)
+	{
+		std::cerr << theRuntimeError.what() << std::endl;
+		return 1;
+	}
 }
