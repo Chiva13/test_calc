@@ -28,8 +28,7 @@ float Divide(const float theDividend, const float theDivisor)
 int main(int argc, char* argv[])
 {
 	SAMSErrorHandling::Initialize();
-
-
+	//nothing
 	while (SAMSPromt::UserWantsToContinueYorN("Divide? "))
 	{
 
