@@ -39,10 +39,39 @@ float Divide(const float theDividend, const float theDivisor)
 	return (theDividend / theDivisor);
 }
 
-float Accumulate(const char theOperathor, const float theOperand)
+void Tape(const char theOperator, const float theOperand)
+{
+	static const int myTapeSize = 3;
+	static char myOperator[myTapeSize];
+	static float myOperand[myTapeSize];
+	static int myNumberOfEntries = 0;
+
+	if (theOperator != '?')
+	{
+		if (myNumberOfEntries < myTapeSize)
+		{
+			myOperator[myNumberOfEntries] = theOperator;
+			myOperand[myNumberOfEntries] = theOperand;
+			myNumberOfEntries++;
+		}
+		else
+		{
+			throw std::runtime_error("Error - Out of room on the tape.");
+		}
+	}
+	else
+	{
+		for (int Index = 0; Index < myNumberOfEntries; Index++)
+		{
+			std::cout << myOperator[Index] << "," << myOperand[Index] << std::endl;
+		}
+	}
+}
+
+float Accumulate(const char theOperator, const float theOperand)
 {
 	static float myAccumulator = 0;
-	switch(theOperathor)
+	switch(theOperator)
 	{
 		case '+':
 			myAccumulator = myAccumulator + theOperand;
@@ -56,12 +85,19 @@ float Accumulate(const char theOperathor, const float theOperand)
 		case '/':
 			myAccumulator = myAccumulator / theOperand;
 			break;
+		case '?':
+			break;
 		default:
 			throw
 				std::runtime_error("Error - invalid operator");
 	}
+
+	Tape(theOperator, theOperand);
+
 	return myAccumulator;
 }
+
+
 
 int main(int argc, char* argv[])
 {
