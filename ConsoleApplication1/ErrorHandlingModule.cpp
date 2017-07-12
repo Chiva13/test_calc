@@ -1,5 +1,6 @@
 #include <iostream>
 #include "ErrorHandlingModule.h"
+#include <exception>  
 
 namespace SAMSErrorHandling
 {

@@ -39,32 +39,56 @@ float Divide(const float theDividend, const float theDivisor)
 	return (theDividend / theDivisor);
 }
 
-void Tape(const char theOperator, const float theOperand)
+void Tape(const char theOperator, const int theOperand)
 {
-	static const int myTapeSize = 3;
-	static char myOperator[myTapeSize];
-	static float myOperand[myTapeSize];
-	static int myNumberOfEntries = 0;
+	static const int myTapeChunk = 3;
 
-	if (theOperator != '?')
+	static char *myOperator = new char[myTapeChunk];
+	static int *myOperand = new int[myTapeChunk];
+
+	static int myTapeSize = myTapeChunk;
+	static int myNumberOfEntries = 0;
+	
+	switch (theOperator)
 	{
-		if (myNumberOfEntries < myTapeSize)
+	case '?':
+		for (int i = 0; i < myNumberOfEntries; i++)
 		{
-			myOperator[myNumberOfEntries] = theOperator;
-			myOperand[myNumberOfEntries] = theOperand;
-			myNumberOfEntries++;
+			std::cout << myOperator[i] << ',' << myOperand[i] << std::endl;
 		}
-		else
+		break;
+	case '.':
+		delete[] myOperator;
+		delete[] myOperand;
+		break;
+	default:
+		if (myNumberOfEntries == myTapeSize)
 		{
-			throw std::runtime_error("Error - Out of room on the tape.");
+			char *ExpandedOperator = new char[myNumberOfEntries + myTapeChunk];
+			int *ExpandedOperand = new int[myNumberOfEntries + myTapeChunk];
+			char *FromOperator = myOperator;
+			int *FromOperand = myOperand;
+
+			char *ToOperator = ExpandedOperator;
+			int *ToOperand = ExpandedOperand;
+			
+			for (int i = 0; i < myNumberOfEntries; i++)
+			{
+				ToOperator[i] = FromOperator[i];
+				ToOperand[i] = FromOperand[i];
+			}
+
+			delete[] myOperator;
+			delete[] myOperand;
+
+			myOperator = ExpandedOperator;
+			myOperand = ExpandedOperand;
+
+			myTapeSize += myTapeChunk;
 		}
-	}
-	else
-	{
-		for (int Index = 0; Index < myNumberOfEntries; Index++)
-		{
-			std::cout << myOperator[Index] << "," << myOperand[Index] << std::endl;
-		}
+		myOperator[myNumberOfEntries] = theOperator;
+		myOperand[myNumberOfEntries] = theOperand;
+		myNumberOfEntries++;
 	}
 }
 
