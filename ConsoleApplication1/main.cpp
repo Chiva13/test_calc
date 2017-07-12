@@ -136,28 +136,35 @@ float Accumulator(const char theOperator, const float theOperand = 0)
 			myAccumulator = myAccumulator + theOperand;
 			Tape(theOperator, theOperand);
 			break;
+
 		case '-':
 			myAccumulator = myAccumulator - theOperand;
 			Tape(theOperator, theOperand);
 			break;
+
 		case '*':
 			myAccumulator = myAccumulator * theOperand;
 			Tape(theOperator, theOperand);
 			break;
+
 		case '/':
 			myAccumulator = myAccumulator / theOperand;
 			Tape(theOperator, theOperand);
 			break;
+
 		case '@':
 			myAccumulator = theOperand;
 			Tape(theOperator, theOperand);
 			break;
+
 		case '=':
 			std::cout << std::endl << myAccumulator << std::endl;
 			break;
+
 		case '?':
 			Tape(theOperator);
 			break;
+
 		default:
 			throw
 				std::runtime_error("Error - invalid operator");
