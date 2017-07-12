@@ -2,44 +2,35 @@
 #include "PromptModule.h"
 #include "ErrorHandlingModule.h"
 
-float GetDividend()
-{
-	float Dividend = 0;
-	std::cout << "Dividend: ";
-	std::cin >> Dividend;
-	return Dividend;
-}
+char GetOperator();
+float GetOperand();
+float Divide(const float , const float);
+void Tape(const char , const int);
+bool TestOK(const char , const float , const float );
+void SelfTest();
+float Accumulator(const char , const float);
 
-float GetDivisor()
+char GetOperator()
 {
-	float Divisor = 1;
-	std::cout << "Divisor: ";
-	std::cin >> Divisor;
-	return Divisor;
+	char Operator;
+	std::cin >> Operator;
+	return Operator;
 }
 
 float GetOperand()
 {
-	float Operand = 0;
-	std::cout << "Operand: ";
+	float Operand;
 	std::cin >> Operand;
 	return Operand;
 }
 
-char GetOperator()
-{
-	char Operator = ' ';
-	std::cout << "Operator: ";
-	std::cin >> Operator;
-	return Operator;
-}
 
 float Divide(const float theDividend, const float theDivisor)
 {
 	return (theDividend / theDivisor);
 }
 
-void Tape(const char theOperator, const int theOperand)
+void Tape(const char theOperator, const int theOperand = 0)
 {
 	static const int myTapeChunk = 3;
 
@@ -92,49 +83,119 @@ void Tape(const char theOperator, const int theOperand)
 	}
 }
 
-float Accumulate(const char theOperator, const float theOperand)
+bool TestOK(const char theOperator, const float theOperand, const float theExpectedResult)
+{
+	float Result = Accumulator(theOperand, theOperand);
+
+	if (Result == theExpectedResult)
+	{
+		std::cout << theOperator << theOperand << " - succeeded." << std::endl;
+		return true;
+	}
+	else
+	{
+		std::cout << theOperator << theOperand << " - failed." 
+			<< "Excepted " << theExpectedResult << ", gor " << Result << std::endl;
+		return false;
+	}
+}
+
+void SelfTest()
+{
+	float OldValue = Accumulator('=');
+	try 
+	{
+		if (
+			TestOK('@', 0, 0) &&
+			TestOK('+', 3, 3) &&
+			TestOK('-', 2, 1) &&
+			TestOK('*', 4, 4) &&
+			TestOK('/', 2, 2)
+			)
+		{
+			std::cout << "Test completed successfully" << std::endl;
+		}
+		else
+		{
+			std::cout << "Test failed." << std::endl;
+		}
+	}
+	catch (...)
+	{
+		std::cout << "An exception occured during self test." << std::endl;
+	}
+	Accumulator('@', OldValue);
+}
+
+float Accumulator(const char theOperator, const float theOperand = 0)
 {
 	static float myAccumulator = 0;
 	switch(theOperator)
 	{
 		case '+':
 			myAccumulator = myAccumulator + theOperand;
+			Tape(theOperator, theOperand);
 			break;
 		case '-':
 			myAccumulator = myAccumulator - theOperand;
+			Tape(theOperator, theOperand);
 			break;
 		case '*':
 			myAccumulator = myAccumulator * theOperand;
+			Tape(theOperator, theOperand);
 			break;
 		case '/':
 			myAccumulator = myAccumulator / theOperand;
+			Tape(theOperator, theOperand);
+			break;
+		case '@':
+			myAccumulator = theOperand;
+			Tape(theOperator, theOperand);
+			break;
+		case '=':
+			std::cout << std::endl << myAccumulator << std::endl;
 			break;
 		case '?':
+			Tape(theOperator);
 			break;
 		default:
 			throw
 				std::runtime_error("Error - invalid operator");
 	}
-
-	Tape(theOperator, theOperand);
-
 	return myAccumulator;
 }
 
-
-
 int main(int argc, char* argv[])
 {
-
 	SAMSErrorHandling::Initialize();
+	char Operator;
 	do
 	{
-
 		try
 		{
-			char Operator = GetOperator();
-			float Operand = GetOperand();
-			std::cout << Accumulate(Operator, Operand) << std::endl;
+			Operator = GetOperator();
+			if (Operator == '+' ||
+				Operator == '-' ||
+				Operator == '*' ||
+				Operator == '/' ||
+				Operator == '@'
+				)
+			{
+				float Operand = GetOperand();
+				Accumulator(Operator, Operand);
+			}
+			else if (Operator == '!')
+			{
+				SelfTest();
+			}
+			else if (Operator == '.')
+			{
+
+			}
+			else
+			{
+				Accumulator(Operator);
+			}
 		}
 		catch (std::runtime_error RuntimeError)
 		{
@@ -144,6 +205,7 @@ int main(int argc, char* argv[])
 		{
 			SAMSErrorHandling::HandleNotANumberError();
 		}
-	} while (SAMSPromt::UserWantsToContinueYorN("More? "));
+	} while (Operator != '.');
+	Tape('.');
 	return 0;
 }
