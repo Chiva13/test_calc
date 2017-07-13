@@ -85,7 +85,7 @@ void Tape(const char theOperator, const int theOperand = 0)
 
 bool TestOK(const char theOperator, const float theOperand, const float theExpectedResult)
 {
-	float Result = Accumulator(theOperand, theOperand);
+	float Result = Accumulator(theOperator, theOperand);
 
 	if (Result == theExpectedResult)
 	{
@@ -95,14 +95,14 @@ bool TestOK(const char theOperator, const float theOperand, const float theExpec
 	else
 	{
 		std::cout << theOperator << theOperand << " - failed." 
-			<< "Excepted " << theExpectedResult << ", gor " << Result << std::endl;
+			<< "Excepted " << theExpectedResult << ", got " << Result << std::endl;
 		return false;
 	}
 }
 
 void SelfTest()
 {
-	float OldValue = Accumulator('=');
+	float OldValue = Accumulator('=',0);
 	try 
 	{
 		if (
